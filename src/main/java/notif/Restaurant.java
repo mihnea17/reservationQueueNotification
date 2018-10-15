@@ -1,34 +1,28 @@
+package notif;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class Restaurant {
     private String restaurantName;
-    private long restaurantId;
     private Queue<Client> clientsWaiting = new LinkedList<>();
+    private Notificator notificator;
 
-    public Restaurant(String restaurantName, long restaurantId){
+    private int internalQueueCounter;
+
+    public Restaurant(String restaurantName, Notificator notificator){
         this.restaurantName = restaurantName;
-        this.restaurantId = restaurantId;
+        this.notificator = notificator;
     }
 
     public void addClient(Client incomingClient){
+
         clientsWaiting.add(incomingClient);
+        this.internalQueueCounter++;
     }
 
-    public String getRestaurantName() {
-        return restaurantName;
-    }
-
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
-    }
-
-    public long getRestaurantId() {
-        return restaurantId;
-    }
-
-    public void setRestaurantId(long restaurantId) {
-        this.restaurantId = restaurantId;
+    public void removeClientFromDB(long clientId){
+        notificator.removeClientFromDB(getRestaurantId(), clientId);
     }
 
     public void removeClientFromQueue(Client cancelledClient){
@@ -37,12 +31,14 @@ public class Restaurant {
         }
         else{
             System.out.println("Client was removed successfully from queue");
+            this.internalQueueCounter--;
         }
     }
 
-    public void removeClientFromQueue(){
+    public void removeFirstClientFromQueue(){
         if(!clientsWaiting.isEmpty()) {
             clientsWaiting.remove();
+            this.internalQueueCounter--;
         }
         else{
             System.out.println(this.restaurantName + " has no waiting clients anymore.");
@@ -53,7 +49,7 @@ public class Restaurant {
         if(!clientsWaiting.isEmpty()) {
             sendNotification(clientsWaiting.element(),1);
             if(clientsWaiting.size()>=2){
-               sendNotification(((LinkedList<Client>) clientsWaiting).get(1),2);
+                sendNotification(((LinkedList<Client>) clientsWaiting).get(1),2);
             }
         }
         else{
@@ -62,8 +58,18 @@ public class Restaurant {
     }
 
     public void sendNotification(Client client, int queuePosition){
-        System.out.println("Notification sent to client on position "+ queuePosition +": " + client.getReservationName() + " on phone no. " + client.getPhoneNumber() +
-                "\nRestaurant: " + this.getRestaurantName() + "\n");
+        this.notificator.sendNotification(this, client, queuePosition);
     }
 
+    public Queue<Client> getClientsWaiting(){
+        return this.clientsWaiting;
+    }
+
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    private long getRestaurantId() {
+        return this.notificator.getRestaurantId(this);
+    }
 }
