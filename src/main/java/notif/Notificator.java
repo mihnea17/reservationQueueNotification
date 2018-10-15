@@ -3,6 +3,7 @@ package notif;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.InputStream;
+import java.sql.Types;
 
 public class Notificator {
     private JdbcTemplate jdbcTemplate;
@@ -34,6 +35,14 @@ public class Notificator {
     }
 
     public void removeClientFromDB(long restaurantId, long clientId) {
-        jdbcTemplate.update(" DELETE FROM clients WHERE restaurantId = ? AND clientId = ?", new Object[] {restaurantId, clientId}, Long.class);
+        jdbcTemplate.update(" DELETE FROM clients WHERE restaurantId = ? AND clientId = ?", new Object[] {restaurantId, clientId}, new int[] {
+            Types.BIGINT, Types.BIGINT});
+    }
+
+    public void removeFirstClientInQueueForRestaurant(long restaurantId) {
+        Long clientId = jdbcTemplate.queryForObject("SELECT clientId FROM clients WHERE restaurantId = ? SORT BY reservationDateAndTime LIMIT 1", new Object[] {restaurantId}, Long.class);
+        if(clientId != null)
+            jdbcTemplate.update(" DELETE FROM clients WHERE restaurantId = ? AND clientId = ?", new Object[] {restaurantId, clientId}, new int[] {
+                Types.BIGINT, Types.BIGINT});
     }
 }

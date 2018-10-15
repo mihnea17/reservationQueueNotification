@@ -55,6 +55,9 @@ public class Main implements CommandLineRunner {
         notificator.registerClientForRestaurant(cantuccio, secondClientInQueue);
 //        jdbcTemplate.update("INSERT INTO clients (restaurantId, fullName, phoneNumber, reservationDateAndTime) VALUES (?,?,?,?)", cantuccio.getRestaurantId(), firstClientInQueue.getReservationName(), firstClientInQueue.getPhoneNumber(), firstClientInQueue.getTimeOfCreation());
 
+//        cantuccio.removeClientFromDB(1);
+        cantuccio.removeFirstClientInQueueFromDB();
+
     }
 
 

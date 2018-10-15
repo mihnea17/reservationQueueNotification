@@ -25,6 +25,10 @@ public class Restaurant {
         notificator.removeClientFromDB(getRestaurantId(), clientId);
     }
 
+    public void removeFirstClientInQueueFromDB(){
+        notificator.removeFirstClientInQueueForRestaurant(this.getRestaurantId());
+    }
+
     public void removeClientFromQueue(Client cancelledClient){
         if(!clientsWaiting.remove(cancelledClient)){
             System.out.println("Client was not in the queue anymore");
