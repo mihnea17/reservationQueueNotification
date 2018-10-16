@@ -16,8 +16,8 @@ public class BasicTests {
     public void setup(){
         notificator = new Notificator();
         cantuccio = new Restaurant("Cantuccio", notificator);
-        firstClientInQueue = new Client("Mihnea Patentasu", "0123", LocalDateTime.now());
-        secondClientInQueue = new Client("Victor Patentasu", "0124", LocalDateTime.now());
+        firstClientInQueue = new Client("Mihnea Patentasu", "0123", LocalDateTime.now(), null);
+        secondClientInQueue = new Client("Victor Patentasu", "0124", LocalDateTime.now(), null);
         cantuccio.addClient(firstClientInQueue);
         cantuccio.addClient(secondClientInQueue);
     }
