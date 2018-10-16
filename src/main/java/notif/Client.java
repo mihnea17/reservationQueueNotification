@@ -1,16 +1,29 @@
 package notif;
 
+
 import java.time.LocalDateTime;
 
 public class Client {
+    private long clientId;
+
     private String reservationName;
     private String phoneNumber;
     private LocalDateTime timeOfCreation;
-
-    public Client(String reservationName, String phoneNumber, LocalDateTime timeOfCreation){
+    private LocalDateTime timeOfDeletion;
+    public Client(String reservationName, String phoneNumber, LocalDateTime timeOfCreation, LocalDateTime timeOfDeletion){
         this.reservationName = reservationName;
         this.phoneNumber = phoneNumber;
         this.timeOfCreation = timeOfCreation;
+        this.timeOfDeletion = timeOfDeletion;
+    }
+
+    public Client(long clientId, String reservationName, String phoneNumber, LocalDateTime timeOfCreation, LocalDateTime timeOfDeletion){
+        this(reservationName, phoneNumber, timeOfCreation, timeOfDeletion);
+        this.clientId = clientId;
+    }
+
+    public long getClientId() {
+        return clientId;
     }
 
     public String getPhoneNumber() {
@@ -25,6 +38,10 @@ public class Client {
         return reservationName;
     }
 
-
+    @Override
+    public String toString(){
+        return "Client[clientId="+this.getClientId()+", reservationName="+this.getReservationName()+", phoneNumber="+this.getPhoneNumber()+
+                ",\nreservationDateAndTime="+this.timeOfCreation+ ", deletionDateAndTime="+this.timeOfDeletion+"]";
+    }
 
 }
