@@ -1,6 +1,7 @@
 package notif;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Restaurant {
@@ -21,12 +22,34 @@ public class Restaurant {
         this.internalQueueCounter++;
     }
 
+    public void registerClientForRestaurant(Client client){
+        this.notificator.registerClientForRestaurant(this, client);
+    }
+
     public void removeClientFromDB(long clientId){
         notificator.removeClientFromDB(getRestaurantId(), clientId);
     }
 
     public void removeFirstClientInQueueFromDB(){
         notificator.removeFirstClientInQueueForRestaurant(this.getRestaurantId());
+    }
+
+    public void notifyNewFirstAndSecondClientsFromDB(){
+        List<Client> firstTwoWaitingClients = getFirstTwoWaitingClients();
+        if(!firstTwoWaitingClients.isEmpty()){
+            this.sendNotification(firstTwoWaitingClients.get(0), 1);
+            if(firstTwoWaitingClients.size()==2){
+                this.sendNotification(firstTwoWaitingClients.get(1), 2);
+            }
+        }
+    }
+
+    public List<Client> getAllWaitingClients(){
+        return this.notificator.getAllWaitingClientsForRestaurant(this.getRestaurantId());
+    }
+
+    public List<Client> getFirstTwoWaitingClients(){
+        return this.notificator.getFirstTwoWaitingClientsForRestaurant(this.getRestaurantId());
     }
 
     public void removeClientFromQueue(Client cancelledClient){
