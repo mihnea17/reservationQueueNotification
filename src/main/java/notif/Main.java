@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.List;
 
 //http://localhost:8080/h2-console
 @SpringBootApplication
+@ComponentScan({"notif", "restControllers"})
 public class Main implements CommandLineRunner {
 
     @Autowired
@@ -61,16 +63,15 @@ public class Main implements CommandLineRunner {
         cantuccio.registerClientForRestaurant(secondClientInQueue);
 
 
+//        cantuccio.notifyNewFirstAndSecondClientsFromDB();
 //        cantuccio.removeClientFromDB(1);
-        cantuccio.removeFirstClientInQueueFromDB();
-        cantuccio.removeFirstClientInQueueFromDB();
+//        cantuccio.removeFirstClientInQueueFromDB();
 
         List<Client> cantuccioClientsWaiting = cantuccio.getAllWaitingClients();
         for(Client client : cantuccioClientsWaiting){
             System.out.println(client);
         }
 
-        cantuccio.notifyNewFirstAndSecondClientsFromDB();
 
     }
 }

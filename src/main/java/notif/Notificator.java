@@ -1,5 +1,8 @@
 package notif;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,13 +13,22 @@ import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Configuration
 public class Notificator {
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+
     public Notificator(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Notificator(){}
+    public Notificator(){
+    }
+
+    @Bean
+    public Notificator notificatorWithJDBC(){
+        return new Notificator(jdbcTemplate);
+    }
 
     public void registerNewRestaurant(String restaurantName){
         this.jdbcTemplate.update("INSERT INTO restaurants (fullName) VALUES (?)", restaurantName);
@@ -30,8 +42,22 @@ public class Notificator {
             System.out.println("Restaurant was not found. Insertion of client failed.");
     }
 
+    public void registerClientForRestaurant(long restaurantId, Client client){
+        this.jdbcTemplate.update("INSERT INTO clients (restaurantId, fullName, phoneNumber, reservationDateAndTime) VALUES (?,?,?,?)", restaurantId, client.getReservationName(), client.getPhoneNumber(), client.getTimeOfCreation());
+    }
+
     public List<Client> getAllWaitingClientsForRestaurant(long restaurantId){
-        return this.jdbcTemplate.query("Select * FROM clients WHERE deletionDateAndTime IS NULL AND restaurantId = ? ORDER BY reservationDateAndTime", new Object[] {restaurantId}, new RowMapper<Client>() {
+        return this.jdbcTemplate.query("SELECT * FROM clients WHERE deletionDateAndTime IS NULL AND restaurantId = ? ORDER BY reservationDateAndTime", new Object[] {restaurantId}, new RowMapper<Client>() {
+            @Override
+            public Client mapRow(ResultSet resultSet, int i) throws SQLException {
+                Client client = new Client(resultSet.getLong(1), resultSet.getString(3), resultSet.getString(4), resultSet.getTimestamp(5).toLocalDateTime(), (resultSet.getTimestamp(6) != null) ? resultSet.getTimestamp(6).toLocalDateTime() : null);
+                return client;
+            }
+        });
+    }
+
+    public List<Client> getAllClientsForRestaurant(long restaurantId){
+        return this.jdbcTemplate.query("SELECT * FROM clients WHERE restaurantId = ? ORDER BY reservationDateAndTime", new Object[] {restaurantId}, new RowMapper<Client>() {
             @Override
             public Client mapRow(ResultSet resultSet, int i) throws SQLException {
                 Client client = new Client(resultSet.getLong(1), resultSet.getString(3), resultSet.getString(4), resultSet.getTimestamp(5).toLocalDateTime(), (resultSet.getTimestamp(6) != null) ? resultSet.getTimestamp(6).toLocalDateTime() : null);

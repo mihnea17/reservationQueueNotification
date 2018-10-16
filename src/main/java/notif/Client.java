@@ -9,13 +9,16 @@ public class Client {
     private String reservationName;
     private String phoneNumber;
     private LocalDateTime timeOfCreation;
+
     private LocalDateTime timeOfDeletion;
+
     public Client(String reservationName, String phoneNumber, LocalDateTime timeOfCreation, LocalDateTime timeOfDeletion){
         this.reservationName = reservationName;
         this.phoneNumber = phoneNumber;
         this.timeOfCreation = timeOfCreation;
         this.timeOfDeletion = timeOfDeletion;
     }
+    public Client(){}
 
     public Client(long clientId, String reservationName, String phoneNumber, LocalDateTime timeOfCreation, LocalDateTime timeOfDeletion){
         this(reservationName, phoneNumber, timeOfCreation, timeOfDeletion);
@@ -36,6 +39,10 @@ public class Client {
 
     public String getReservationName() {
         return reservationName;
+    }
+
+    public void setTimeOfCreation(LocalDateTime timeOfCreation) {
+        this.timeOfCreation = timeOfCreation;
     }
 
     @Override
