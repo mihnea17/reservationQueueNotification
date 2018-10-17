@@ -16,9 +16,15 @@ public class PostController {
     Notificator notificatorWithJDBC;
 
     @PostMapping("/createClient/{restaurantId}")
-    public void postNewClient(@PathVariable Long restaurantId, @RequestBody Client client){
-        client.setTimeOfCreation(LocalDateTime.now());
-        notificatorWithJDBC.registerClientForRestaurant(restaurantId, client);
+    public String postNewClient(@PathVariable Long restaurantId, @RequestBody Client client){
+        if(notificatorWithJDBC.checkRestaurantIdExists(restaurantId)>0) {
+            client.setTimeOfCreation(LocalDateTime.now());
+            notificatorWithJDBC.registerClientForRestaurant(restaurantId, client);
+            return "Client successfully created!";
+        }
+        else{
+            return "Restaurant ID does not exist";
+        }
     }
 
 }
