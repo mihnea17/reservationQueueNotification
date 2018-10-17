@@ -64,7 +64,7 @@ public class Main implements CommandLineRunner {
 
 
 //        cantuccio.notifyNewFirstAndSecondClientsFromDB();
-//        cantuccio.removeClientFromDB(1);
+//        cantuccio.removeClientFromQueueDB(1);
 //        cantuccio.removeFirstClientInQueueFromDB();
 
         List<Client> cantuccioClientsWaiting = cantuccio.getAllWaitingClients();
