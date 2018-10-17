@@ -25,11 +25,6 @@ public class Notificator {
     public Notificator(){
     }
 
-    @Bean
-    public Notificator notificatorWithJDBC(){
-        return new Notificator(jdbcTemplate);
-    }
-
     public void registerNewRestaurant(String restaurantName){
         this.jdbcTemplate.update("INSERT INTO restaurants (fullName) VALUES (?)", restaurantName);
     }
@@ -66,6 +61,10 @@ public class Notificator {
         });
     }
 
+    public Long checkRestaurantIdExists(long restaurantId){
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM restaurants WHERE restaurantId = ?", new Object[] { restaurantId }, Long.class);
+    }
+
     public void sendNotification(Restaurant restaurant, Client client, int queuePosition){
         System.out.println("Notification sent to client on position "+ queuePosition +": " + client.getReservationName() + " on phone no. " + client.getPhoneNumber() +
                 "\nRestaurant: " + restaurant.getRestaurantName() + "\n");
@@ -75,21 +74,16 @@ public class Notificator {
         return jdbcTemplate.queryForObject("SELECT restaurantId FROM restaurants WHERE fullName = ?", new Object[] { restaurant.getRestaurantName() }, Long.class);
     }
 
-    public void removeClientFromDB(long restaurantId, long clientId) {
+    public void removeClientFromQueueDB(long restaurantId, long clientId) {
         jdbcTemplate.update(" UPDATE clients SET deletionDateAndTime = ? WHERE restaurantId = ? AND clientId = ?", new Object[] {LocalDateTime.now() ,restaurantId, clientId}, new int[] {
                 Types.TIMESTAMP ,Types.BIGINT, Types.BIGINT});
     }
 
-    public void removeFirstClientInQueueForRestaurant(long restaurantId) {
-        try{
+    public void removeFirstClientInQueueForRestaurant(long restaurantId) throws EmptyResultDataAccessException{
             Long clientId = jdbcTemplate.queryForObject("SELECT clientId FROM clients WHERE deletionDateAndTime IS NULL and restaurantId = ? ORDER BY reservationDateAndTime LIMIT 1", new Object[] {restaurantId}, Long.class);
             if(clientId != null)
                 jdbcTemplate.update(" UPDATE clients SET deletionDateAndTime = ? WHERE restaurantId = ? AND clientId = ?", new Object[] {LocalDateTime.now() ,restaurantId, clientId}, new int[] {
                         Types.TIMESTAMP ,Types.BIGINT, Types.BIGINT});
-        }
-        catch(EmptyResultDataAccessException e){
-            System.out.println("There are no more clients waiting for their reservation/notification!");
-        }
     }
 
     public List<Client> getFirstTwoWaitingClientsForRestaurant(long restaurantId) {
