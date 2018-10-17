@@ -1,5 +1,7 @@
 package notif;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -27,11 +29,16 @@ public class Restaurant {
     }
 
     public void removeClientFromDB(long clientId){
-        notificator.removeClientFromDB(getRestaurantId(), clientId);
+        notificator.removeClientFromQueueDB(getRestaurantId(), clientId);
     }
 
     public void removeFirstClientInQueueFromDB(){
-        notificator.removeFirstClientInQueueForRestaurant(this.getRestaurantId());
+        try{
+            notificator.removeFirstClientInQueueForRestaurant(this.getRestaurantId());
+        }
+        catch (EmptyResultDataAccessException e){
+            System.out.println("No client to remove from waiting queue");
+        }
     }
 
     public void notifyNewFirstAndSecondClientsFromDB(){
